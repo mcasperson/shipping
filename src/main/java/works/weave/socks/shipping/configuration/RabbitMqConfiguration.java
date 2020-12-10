@@ -11,14 +11,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 
 @Configuration
 public class RabbitMqConfiguration {
 
     final static String queueName = "shipping-task";
 
-    @Value("${spring.rabbitmq.host}")
-    private String host;
+    @Value("${spring.rabbitmq.uri}")
+    private String uri;
 
     @Value("${spring.rabbitmq.username}")
     private String username;
@@ -26,12 +29,9 @@ public class RabbitMqConfiguration {
     @Value("${spring.rabbitmq.password}")
     private String password;
 
-    @Value("${spring.rabbitmq.port}")
-    private int port;
-
     @Bean
-    public ConnectionFactory connectionFactory() {
-        CachingConnectionFactory connectionFactory = new CachingConnectionFactory(host, port);
+    public ConnectionFactory connectionFactory() throws URISyntaxException {
+        CachingConnectionFactory connectionFactory = new CachingConnectionFactory(new URI(uri));
         connectionFactory.setCloseTimeout(5000);
         connectionFactory.setConnectionTimeout(5000);
         connectionFactory.setUsername(username);
@@ -40,7 +40,7 @@ public class RabbitMqConfiguration {
     }
 
     @Bean
-    public AmqpAdmin amqpAdmin() {
+    public AmqpAdmin amqpAdmin() throws URISyntaxException {
         return new RabbitAdmin(connectionFactory());
     }
 
@@ -50,7 +50,7 @@ public class RabbitMqConfiguration {
     }
 
     @Bean
-    public RabbitTemplate rabbitTemplate() {
+    public RabbitTemplate rabbitTemplate() throws URISyntaxException {
         RabbitTemplate template = new RabbitTemplate(connectionFactory());
         template.setMessageConverter(jsonMessageConverter());
         return template;
