@@ -1,6 +1,9 @@
 package works.weave.socks.shipping.controllers;
 
 import com.rabbitmq.client.Channel;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.rabbit.core.ChannelCallback;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -19,6 +22,8 @@ import java.util.Map;
 
 @RestController
 public class ShippingController {
+
+    private final Logger LOG = LoggerFactory.getLogger(getClass());
 
     @Autowired
     RabbitTemplate rabbitTemplate;
@@ -69,6 +74,7 @@ public class ShippingController {
                 }
             });
         } catch ( AmqpException e ) {
+            LOG.error("Failed to connect to RabbitMQ instance. " + e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
             rabbitmq.setStatus("err");
         }
 

@@ -26,9 +26,12 @@ public class RabbitMqConfiguration {
     @Value("${spring.rabbitmq.password}")
     private String password;
 
+    @Value("${spring.rabbitmq.port}")
+    private int port;
+
     @Bean
     public ConnectionFactory connectionFactory() {
-        CachingConnectionFactory connectionFactory = new CachingConnectionFactory(host);
+        CachingConnectionFactory connectionFactory = new CachingConnectionFactory(host, port);
         connectionFactory.setCloseTimeout(5000);
         connectionFactory.setConnectionTimeout(5000);
         connectionFactory.setUsername(username);

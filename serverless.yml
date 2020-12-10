@@ -18,6 +18,7 @@ functions:
       RABBIT_MQ_HOST: ${opt:hostname}
       RABBIT_MQ_USERNAME: ${opt:username}
       RABBIT_MQ_PASSWORD: ${opt:password}
+      RABBIT_MQ_PORT: ${opt:port}
     handler: works.weave.socks.shipping.StreamLambdaHandler
     events:
       - http: ANY /
