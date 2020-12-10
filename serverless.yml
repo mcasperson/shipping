@@ -1,0 +1,24 @@
+service: shipping
+provider:
+  name: aws
+  runtime: java11
+  timeout: 60
+  iamRoleStatements: # IAM role statements so that services can be accessed in the AWS account
+    - Effect: 'Allow'
+      Action:
+        - 'ec2:CreateNetworkInterface'
+        - 'ec2:DescribeNetworkInterfaces'
+        - 'ec2:DeleteNetworkInterface'
+      Resource: "*"
+package:
+  artifact: target/shipping-original.jar
+functions:
+  shipping:
+    environment:
+      RABBIT_MQ_HOST: ${opt:hostname}
+      RABBIT_MQ_USERNAME: ${opt:username}
+      RABBIT_MQ_PASSWORD: ${opt:password}
+    handler: works.weave.socks.shipping.StreamLambdaHandler
+    events:
+      - http: ANY /
+      - http: 'ANY {proxy+}'

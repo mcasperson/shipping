@@ -115,3 +115,5 @@ weave-ecs-demo-key.pem
 
 # Ignore Vagrant cache files
 *.vagrant/
+
+.serverless
