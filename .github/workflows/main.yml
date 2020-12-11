@@ -15,10 +15,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      GROUP: weaveworksdemos
-      COMMIT: ${{ github.sha }}
-      REPO: shipping
     steps:
       - uses: actions/checkout@v2
 
@@ -43,21 +39,23 @@ jobs:
       - name: Integration Tests
         run: mvn integration-test
 
-      # Upload coverage results to coveralls
-      - name: Submit Coveralls
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
         env:
-          COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
-        run: mvn -DrepoToken=${COVERALLS_TOKEN} -DserviceJobId=${GITHUB_RUN_ID} -Dbranch=${GITHUB_REF} -DpullRequest=${GITHUB_HEAD_REF} -DserviceName=GITHUB verify jacoco:report coveralls:report
-
-      # Push to dockerhub
-      - name: Push to Docker Hub
-        uses: docker/build-push-action@v1
-        if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/master'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          username: ${{ secrets.DOCKER_USER }}
-          password: ${{ secrets.DOCKER_PASS }}
-          dockerfile: docker/shipping/Dockerfile
-          path: target/
-          repository: ${{ env.GROUP }}/${{ env.REPO }}
-          tag_with_ref: true
-          tag_with_sha: true
+          tag_name: 0.0.${{ github.run_number }}
+          release_name: Release 0.0.${{ github.run_number }}
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: target/shipping.jar.original
+          asset_name: shipping-original.jar
+          asset_content_type: application/zip
