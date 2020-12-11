@@ -58,4 +58,4 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: target/shipping.jar.original
           asset_name: shipping-original.jar
-          asset_content_type: application/zip
+          asset_content_type: application/java-archive
