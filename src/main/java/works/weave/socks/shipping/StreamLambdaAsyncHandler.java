@@ -21,6 +21,9 @@ public class StreamLambdaAsyncHandler implements RequestStreamHandler {
                 .asyncInit()
                 .springBootApplication(ShippingServiceApplication.class)
                 .buildAndInitialize();
+        if (System.getenv("BASE_URI") != null) {
+            handler.stripBasePath(System.getenv("BASE_URI"));
+        }
     }
 
     @Override
